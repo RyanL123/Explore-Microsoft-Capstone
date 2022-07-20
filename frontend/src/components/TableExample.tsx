@@ -6,6 +6,7 @@ import {
     SelectionMode,
     IColumn,
 } from "@fluentui/react/lib/DetailsList";
+import { Icon } from "@fluentui/react";
 import { mergeStyleSets } from "@fluentui/react/lib/Styling";
 var seedrandom = require("seedrandom");
 var rng = seedrandom("Azure");
@@ -66,9 +67,8 @@ export interface IDocument {
     key: string;
     name: string;
     value: string;
-    iconName: string;
     serialNumber: number;
-    stock: string;
+    stock: number;
     location: string;
     price: number;
 }
@@ -93,24 +93,30 @@ export class Table extends React.Component<
                 iconClassName: classNames.fileIconHeaderIcon,
                 ariaLabel:
                     "Column operations for File type, Press to sort on File type",
-                iconName: "Page",
+                iconName: "ProductList",
                 isIconOnly: true,
-                fieldName: "name",
+                fieldName: "stock",
                 minWidth: 16,
                 maxWidth: 16,
                 onColumnClick: this._onColumnClick,
-                onRender: (item: IDocument) => (
-                    <img
-                        src={item.iconName}
-                        className={classNames.fileIconImg}
-                    />
-                ),
+                onRender: (item: IDocument) =>
+                    item.stock < 10 ? (
+                        <Icon
+                            iconName="HourGlass"
+                            styles={{ root: { color: "#0078d4" } }}
+                        />
+                    ) : (
+                        <Icon
+                            iconName="FlameSolid"
+                            styles={{ root: { color: "#d83b01" } }}
+                        />
+                    ),
             },
             {
                 key: "column2",
                 name: "Serial Number",
                 fieldName: "serialNumber",
-                minWidth: 210,
+                minWidth: 100,
                 maxWidth: 350,
                 isRowHeader: true,
                 isResizable: true,
@@ -162,7 +168,7 @@ export class Table extends React.Component<
                 data: "string",
                 onColumnClick: this._onColumnClick,
                 onRender: (item: IDocument) => {
-                    return <span>{item.stock}</span>;
+                    return <span>{item.stock > 50 ? "50+" : item.stock}</span>;
                 },
                 isPadded: true,
             },
@@ -201,11 +207,7 @@ export class Table extends React.Component<
     }
 
     public render() {
-        const {
-            columns,
-            isCompactMode,
-            items
-        } = this.state;
+        const { columns, isCompactMode, items } = this.state;
 
         return (
             <div>
@@ -338,27 +340,40 @@ function _copyAndSort<T>(
 }
 
 function _generateDocuments() {
+    const parts = [
+        "All-Purpose Bike Stand",
+        "AWC Logo Cap",
+        "Bike Wash - Dissolver",
+        "Cable Lock",
+        "Chain",
+        "Classic Vest, L",
+        "Classic Vest, M",
+        "Classic Vest, S",
+        "Fender Set - Mountain",
+        "Front Brakes",
+        "Front Derailleur",
+        "Full-Finger Gloves, L",
+        "Full-Finger Gloves, M",
+        "Full-Finger Gloves, S",
+        "Half-Finger Gloves, L",
+        "Half-Finger Gloves, M",
+        "Half-Finger Gloves, S",
+        "Headlights - Dual-Beam",
+        "Headlights - Weatherproof",
+        "Hitch Rack - 4-Bike",
+    ];
     const items: IDocument[] = [];
     for (let i = 0; i < 20; i++) {
         const randomStock = _randomNumber(0, 100);
-        const randomPrice = _randomNumber(3, 200);
+        const randomPrice = _randomNumber(3, 100);
         const randomSerialNumber = _randomNumber(100000, 999999);
-        const randomFileType = _randomFileIcon();
         const randomLocation = _randomLocation();
-        let fileName = _lorem(2);
-        fileName = fileName.charAt(0).toUpperCase();
-        let userName = _lorem(2);
-        userName = userName
-            .split(" ")
-            .map((name: string) => name.charAt(0).toUpperCase() + name.slice(1))
-            .join(" ");
         items.push({
             key: i.toString(),
-            name: fileName,
-            value: fileName,
-            iconName: randomFileType.url,
+            name: parts[i],
+            value: parts[i],
             serialNumber: randomSerialNumber,
-            stock: randomStock > 50 ? "50+" : randomStock.toString(),
+            stock: randomStock,
             location: randomLocation,
             price: randomPrice,
         });
@@ -391,61 +406,6 @@ function _randomLocation(): string {
     return locations[Math.floor(rng() * locations.length)];
 }
 
-const FILE_ICONS: { name: string }[] = [
-    { name: "accdb" },
-    { name: "audio" },
-    { name: "code" },
-    { name: "csv" },
-    { name: "docx" },
-    { name: "dotx" },
-    { name: "mpp" },
-    { name: "mpt" },
-    { name: "model" },
-    { name: "one" },
-    { name: "onetoc" },
-    { name: "potx" },
-    { name: "ppsx" },
-    { name: "pdf" },
-    { name: "photo" },
-    { name: "pptx" },
-    { name: "presentation" },
-    { name: "potx" },
-    { name: "pub" },
-    { name: "rtf" },
-    { name: "spreadsheet" },
-    { name: "txt" },
-    { name: "vector" },
-    { name: "vsdx" },
-    { name: "vssx" },
-    { name: "vstx" },
-    { name: "xlsx" },
-    { name: "xltx" },
-    { name: "xsn" },
-];
-
-function _randomFileIcon(): { docType: string; url: string } {
-    const docType: string =
-        FILE_ICONS[Math.floor(rng() * FILE_ICONS.length)].name;
-    return {
-        docType,
-        url: `https://static2.sharepointonline.com/files/fabric/assets/item-types/16/${docType}.svg`,
-    };
-}
-
 function _randomNumber(lower: number, upper: number): number {
     return Math.floor(rng() * (upper - lower)) + lower;
-}
-
-const LOREM_IPSUM = (
-    "lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut " +
-    "labore et dolore magna aliqua ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut " +
-    "aliquip ex ea commodo consequat duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore " +
-    "eu fugiat nulla pariatur excepteur sint occaecat cupidatat non proident sunt in culpa qui officia deserunt "
-).split(" ");
-let loremIndex = 0;
-function _lorem(wordCount: number): string {
-    const startIndex =
-        loremIndex + wordCount > LOREM_IPSUM.length ? 0 : loremIndex;
-    loremIndex = startIndex + wordCount;
-    return LOREM_IPSUM.slice(startIndex, loremIndex).join(" ");
 }
