@@ -5,7 +5,6 @@ import {
     TextField,
     Stack,
     IIconProps,
-    initializeIcons,
     ProgressIndicator,
 } from "@fluentui/react";
 import { FontSizes } from "@fluentui/theme";
@@ -14,7 +13,6 @@ import { Table } from "./components/TableExample";
 // import Table from "./components/Table";
 
 // icons
-initializeIcons();
 const uploadIcon: IIconProps = { iconName: "Upload" };
 const searchIcon: IIconProps = { iconName: "Search" };
 const linkIcon: IIconProps = { iconName: "Link" };
