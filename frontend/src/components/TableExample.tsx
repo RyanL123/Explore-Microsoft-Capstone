@@ -1,7 +1,4 @@
 import * as React from "react";
-import { TextField } from "@fluentui/react/lib/TextField";
-import { Toggle } from "@fluentui/react/lib/Toggle";
-import { Announced } from "@fluentui/react/lib/Announced";
 import {
     DetailsList,
     DetailsListLayoutMode,
@@ -9,9 +6,7 @@ import {
     SelectionMode,
     IColumn,
 } from "@fluentui/react/lib/DetailsList";
-import { MarqueeSelection } from "@fluentui/react/lib/MarqueeSelection";
 import { mergeStyleSets } from "@fluentui/react/lib/Styling";
-import { TooltipHost } from "@fluentui/react";
 var seedrandom = require("seedrandom");
 var rng = seedrandom("Azure");
 
@@ -209,10 +204,7 @@ export class Table extends React.Component<
         const {
             columns,
             isCompactMode,
-            items,
-            selectionDetails,
-            isModalSelection,
-            announcedMessage,
+            items
         } = this.state;
 
         return (
@@ -348,7 +340,6 @@ function _copyAndSort<T>(
 function _generateDocuments() {
     const items: IDocument[] = [];
     for (let i = 0; i < 20; i++) {
-        const randomDate = _randomDate(new Date(2012, 0, 1), new Date());
         const randomStock = _randomNumber(0, 100);
         const randomPrice = _randomNumber(3, 200);
         const randomSerialNumber = _randomNumber(100000, 999999);

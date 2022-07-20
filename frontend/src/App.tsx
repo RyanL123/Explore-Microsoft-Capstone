@@ -6,7 +6,6 @@ import {
     Stack,
     IIconProps,
     initializeIcons,
-    IStackItemStyles,
     ProgressIndicator,
 } from "@fluentui/react";
 import { FontSizes } from "@fluentui/theme";
