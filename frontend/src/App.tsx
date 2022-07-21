@@ -6,9 +6,10 @@ import {
     Stack,
     IIconProps,
     ProgressIndicator,
+    IContextualMenuProps,
 } from "@fluentui/react";
 import { FontSizes } from "@fluentui/theme";
-import { getTextFromImage } from "./components/OCR";
+import { getTextFromImage, getPartType } from "./components/OCR";
 import { Table } from "./components/TableExample";
 
 // icons
@@ -23,6 +24,31 @@ function App() {
     const [loading, setLoading] = useState(false);
     const fileRef = useRef(null);
 
+    // dropdown
+    const menuProps: IContextualMenuProps = {
+        items: [
+            {
+                key: "serial",
+                text: "By serial number",
+                iconProps: { iconName: "QRcode" },
+                onClick: (e) => {
+                    e.preventDefault();
+                    handleSerialSubmit();
+                },
+            },
+            {
+                key: "part",
+                text: "By part",
+                iconProps: { iconName: "PictureFill" },
+                onClick: (e) => {
+                    e.preventDefault();
+                    handlePartSubmit();
+                },
+            },
+        ],
+        directionalHintFixed: true,
+    };
+
     // convert image to base64 url
     function encodeImageFileAsURL(element) {
         var file = element.files[0];
@@ -36,13 +62,22 @@ function App() {
     }
 
     // call Azure OCR API
-    function handleSubmit() {
+    function handleSerialSubmit() {
         setLoading(true);
         getTextFromImage(url).then((extractedText) => {
             setText(extractedText);
             setLoading(false);
         });
     }
+
+    function handlePartSubmit() {
+        setLoading(true);
+        getPartType(url).then((data) => {
+            console.log(data);
+            setLoading(false);
+        });
+    }
+
     return (
         <Stack
             wrap
@@ -67,6 +102,7 @@ function App() {
                     iconProps={linkIcon}
                     placeholder="https://example.com"
                 />
+
                 <input
                     type="file"
                     ref={fileRef}
@@ -84,13 +120,9 @@ function App() {
                 >
                     <PrimaryButton
                         iconProps={searchIcon}
-                        onClick={(e) => {
-                            e.preventDefault();
-                            handleSubmit();
-                        }}
-                    >
-                        Search
-                    </PrimaryButton>
+                        text="Search"
+                        menuProps={menuProps}
+                    />
                     <DefaultButton
                         iconProps={uploadIcon}
                         onClick={() => fileRef.current.click()}

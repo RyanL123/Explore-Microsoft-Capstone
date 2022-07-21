@@ -58,3 +58,27 @@ export async function getTextFromImage(url: string) {
         });
     });
 }
+
+const CV_ENDPOINT_URL =
+    "https://adventureworksobjectrecog-prediction.cognitiveservices.azure.com/customvision/v3.0/Prediction/8dc317ee-4eb2-4ca2-8515-7841e836b3fa/classify/iterations/Iteration1/url";
+
+const CV_ENDPOINT_IMAGE =
+    "https://adventureworksobjectrecog-prediction.cognitiveservices.azure.com/customvision/v3.0/Prediction/8dc317ee-4eb2-4ca2-8515-7841e836b3fa/classify/iterations/Iteration1/image ";
+
+export async function getPartType(url: string) {
+    const isBase64 = url.substring(0, 4) === "data";
+    return await fetch(isBase64 ? CV_ENDPOINT_IMAGE : CV_ENDPOINT_URL, {
+        method: "POST",
+        headers: {
+            "Content-Type": isBase64
+                ? "application/octet-stream"
+                : "application/json",
+            "Prediction-Key": "49abfcf6092c420284a00c0805cc64f7",
+        },
+        body: isBase64 ? makeBlob(url) : `{"url":"${url}"}`,
+    }).then((data) => {
+        return data.json().then((data) => {
+            return data;
+        });
+    });
+}
