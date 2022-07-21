@@ -1,5 +1,5 @@
 const ENDPOINT_URL = "https://adventureworksocr.cognitiveservices.azure.com/";
-const OCR_ENDPOINT = `${ENDPOINT_URL}vision/v3.2/ocr`;
+const OCR_ENDPOINT = `${ENDPOINT_URL}vision/v3.2/ocr?language=en&detectOrientation=true`;
 const SUBSCRIPTION_KEY = "f2c848871684499cb002561d34ebff64";
 
 function makeBlob(dataURL: string) {
@@ -25,14 +25,16 @@ function makeBlob(dataURL: string) {
 }
 
 export async function getTextFromImage(url: string) {
+    const isBase64 = url.substring(0, 4) === "data";
     return await fetch(OCR_ENDPOINT, {
         method: "POST",
         headers: {
-            "Content-Type": "application/octet-stream",
+            "Content-Type": isBase64
+                ? "application/octet-stream"
+                : "application/json",
             "Ocp-Apim-Subscription-Key": SUBSCRIPTION_KEY,
         },
-        // body: `{"url":"${url}"}`,
-        body: makeBlob(url),
+        body: isBase64 ? makeBlob(url) : `{"url":"${url}"}`,
     }).then((data) => {
         return data.json().then((data) => {
             const regions = data["regions"];

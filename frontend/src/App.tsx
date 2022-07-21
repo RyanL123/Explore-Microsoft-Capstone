@@ -5,17 +5,13 @@ import {
     TextField,
     Stack,
     IIconProps,
-    initializeIcons,
-    IStackItemStyles,
     ProgressIndicator,
 } from "@fluentui/react";
 import { FontSizes } from "@fluentui/theme";
 import { getTextFromImage } from "./components/OCR";
 import { Table } from "./components/TableExample";
-// import Table from "./components/Table";
 
 // icons
-initializeIcons();
 const uploadIcon: IIconProps = { iconName: "Upload" };
 const searchIcon: IIconProps = { iconName: "Search" };
 const linkIcon: IIconProps = { iconName: "Link" };
@@ -48,18 +44,23 @@ function App() {
         });
     }
     return (
-        <Stack horizontal wrap horizontalAlign="space-evenly">
+        <Stack
+            wrap
+            horizontalAlign="center"
+            verticalAlign="center"
+            style={{ padding: "2vh 10vw" }}
+        >
             <Stack
-                grow
+                style={{ width: "100%" }}
                 tokens={{
                     childrenGap: "m",
                     padding: "m",
                 }}
-                // style={{ minWidth: "40%" }}
             >
                 <TextField
                     label="Image URL"
                     value={url}
+                    styles={{ root: { width: "100%" } }}
                     onChange={(e) =>
                         setUrl((e.target as HTMLTextAreaElement).value)
                     }
@@ -74,6 +75,7 @@ function App() {
                 />
                 {loading ? <ProgressIndicator /> : ""}
                 <Stack
+                    wrap
                     horizontal
                     verticalAlign="center"
                     tokens={{
@@ -98,7 +100,7 @@ function App() {
                     <p>{fileName}</p>
                 </Stack>
             </Stack>
-            <Stack style={{ minWidth: "50vw" }}>
+            <Stack tokens={{ padding: "m" }} style={{ width: "100%" }}>
                 <Stack verticalAlign="start">
                     <p style={{ fontSize: FontSizes.size24 }}>
                         Your serial number: {text}
