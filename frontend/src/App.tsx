@@ -10,7 +10,7 @@ import {
 } from "@fluentui/react";
 import { FontSizes } from "@fluentui/theme";
 import { getTextFromImage, getPartType } from "./components/OCR";
-import { Table } from "./components/TableExample";
+import Database from "./components/Database";
 
 // icons
 const uploadIcon: IIconProps = { iconName: "Upload" };
@@ -138,7 +138,7 @@ function App() {
                         Your serial number: {text}
                     </p>
                 </Stack>
-                <Table />
+                <Database />
             </Stack>
         </Stack>
     );

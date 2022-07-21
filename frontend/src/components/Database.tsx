@@ -73,10 +73,7 @@ export interface IDocument {
     price: number;
 }
 
-export class Table extends React.Component<
-    {},
-    IDetailsListDocumentsExampleState
-> {
+class Database extends React.Component<{}, IDetailsListDocumentsExampleState> {
     private _selection: Selection;
     private _allItems: IDocument[];
 
@@ -409,3 +406,5 @@ function _randomLocation(): string {
 function _randomNumber(lower: number, upper: number): number {
     return Math.floor(rng() * (upper - lower)) + lower;
 }
+
+export default Database;
