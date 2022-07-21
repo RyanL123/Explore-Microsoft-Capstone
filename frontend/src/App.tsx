@@ -20,6 +20,7 @@ const linkIcon: IIconProps = { iconName: "Link" };
 function App() {
     const [url, setUrl] = useState("");
     const [text, setText] = useState("");
+    const [parts, setParts] = useState("");
     const [fileName, setFileName] = useState("");
     const [loading, setLoading] = useState(false);
     const fileRef = useRef(null);
@@ -73,7 +74,9 @@ function App() {
     function handlePartSubmit() {
         setLoading(true);
         getPartType(url).then((data) => {
-            console.log(data);
+            let concatenatedParts = "";
+            data.forEach((part) => (concatenatedParts += `${part.tagName} `));
+            setParts(concatenatedParts);
             setLoading(false);
         });
     }
@@ -94,6 +97,7 @@ function App() {
             >
                 <TextField
                     label="Image URL"
+                    description="Enter a link to the image or upload one"
                     value={url}
                     styles={{ root: { width: "100%" } }}
                     onChange={(e) =>
@@ -136,6 +140,9 @@ function App() {
                 <Stack verticalAlign="start">
                     <p style={{ fontSize: FontSizes.size24 }}>
                         Your serial number: {text}
+                    </p>
+                    <p style={{ fontSize: FontSizes.size24 }}>
+                        Predicted parts: {parts}
                     </p>
                 </Stack>
                 <Database />

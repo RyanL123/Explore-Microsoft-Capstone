@@ -78,7 +78,10 @@ export async function getPartType(url: string) {
         body: isBase64 ? makeBlob(url) : `{"url":"${url}"}`,
     }).then((data) => {
         return data.json().then((data) => {
-            return data;
+            let finalPredictions = data.predictions.filter((prediction) => {
+                return prediction.probability >= 0.85;
+            });
+            return finalPredictions;
         });
     });
 }
