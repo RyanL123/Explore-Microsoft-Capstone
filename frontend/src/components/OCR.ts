@@ -46,10 +46,8 @@ export async function getTextFromImage(url: string) {
                     const lines = text["lines"];
                     for (let word of lines) {
                         const words = word["words"];
-                        fullText += "\n"; // line break in between sentences
                         for (let text of words) {
-                            console.log(text["text"]);
-                            fullText += text["text"] + " "; // add space after word
+                            fullText += text["text"]; // add space after word
                         }
                     }
                 }

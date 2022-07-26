@@ -156,7 +156,7 @@ function App() {
                         Predicted parts: {parts}
                     </p>
                 </Stack>
-                <Database />
+                <Database filter={text} key={text} />
             </Stack>
         </Stack>
     );

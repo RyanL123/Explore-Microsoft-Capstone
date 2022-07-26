@@ -8,8 +8,7 @@ import {
 } from "@fluentui/react/lib/DetailsList";
 import { Icon } from "@fluentui/react";
 import { mergeStyleSets } from "@fluentui/react/lib/Styling";
-var seedrandom = require("seedrandom");
-var rng = seedrandom("Azure");
+const seedrandom = require("seedrandom");
 
 const classNames = mergeStyleSets({
     fileIconHeaderIcon: {
@@ -57,6 +56,7 @@ const controlStyles = {
 export interface IDetailsListDocumentsExampleState {
     columns: IColumn[];
     items: IDocument[];
+    filter: string;
     selectionDetails: string;
     isModalSelection: boolean;
     isCompactMode: boolean;
@@ -68,19 +68,24 @@ export interface IDocument {
     name: string;
     value: string;
     serialNumber: number;
+    type: string;
     stock: number;
     location: string;
     price: number;
 }
 
-class Database extends React.Component<{}, IDetailsListDocumentsExampleState> {
+class Database extends React.Component<
+    { filter },
+    IDetailsListDocumentsExampleState
+> {
     private _selection: Selection;
     private _allItems: IDocument[];
+    rng = seedrandom("Azure");
 
-    constructor(props: {}) {
+    constructor(props: { filter }) {
         super(props);
 
-        this._allItems = _generateDocuments();
+        this._allItems = this._generateDocuments();
 
         const columns: IColumn[] = [
             {
@@ -192,9 +197,10 @@ class Database extends React.Component<{}, IDetailsListDocumentsExampleState> {
                 });
             },
         });
-
+        console.log(props);
         this.state = {
             items: this._allItems,
+            filter: props.filter,
             columns: columns,
             selectionDetails: this._getSelectionDetails(),
             isModalSelection: false,
@@ -204,12 +210,15 @@ class Database extends React.Component<{}, IDetailsListDocumentsExampleState> {
     }
 
     public render() {
-        const { columns, isCompactMode, items } = this.state;
-
+        const { columns, isCompactMode, items, filter } = this.state;
+        // filter items before displaying
+        const filtered_items = items.filter((item) => {
+            return filter === "" || item.serialNumber.toString() === filter;
+        });
         return (
             <div>
                 <DetailsList
-                    items={items}
+                    items={filtered_items}
                     compact={isCompactMode}
                     columns={columns}
                     selectionMode={SelectionMode.none}
@@ -321,6 +330,79 @@ class Database extends React.Component<{}, IDetailsListDocumentsExampleState> {
             items: newItems,
         });
     };
+    _generateDocuments() {
+        const parts = [
+            "All-Purpose Bike Stand",
+            "AWC Logo Cap",
+            "Bike Wash - Dissolver",
+            "Cable Lock",
+            "Chain",
+            "Classic Vest, L",
+            "Classic Vest, M",
+            "Classic Vest, S",
+            "Fender Set - Mountain",
+            "Front Brakes",
+            "Front Derailleur",
+            "Full-Finger Gloves, L",
+            "Full-Finger Gloves, M",
+            "Full-Finger Gloves, S",
+            "Half-Finger Gloves, L",
+            "Half-Finger Gloves, M",
+            "Half-Finger Gloves, S",
+            "Headlights - Dual-Beam",
+            "Headlights - Weatherproof",
+            "Hitch Rack - 4-Bike",
+        ];
+        // seat, frame, handlebar, pedal, wheel
+        const type = [""];
+        const items: IDocument[] = [];
+        for (let i = 0; i < 20; i++) {
+            const randomStock = this._randomNumber(0, 100);
+            const randomPrice = this._randomNumber(3, 100);
+            const randomSerialNumber = this._randomNumber(100000, 999999);
+            const randomLocation = this._randomLocation();
+            items.push({
+                key: i.toString(),
+                name: parts[i],
+                value: parts[i],
+                type: type[i],
+                serialNumber: randomSerialNumber,
+                stock: randomStock,
+                location: randomLocation,
+                price: randomPrice,
+            });
+        }
+        return items;
+    }
+
+    _randomDate(
+        start: Date,
+        end: Date
+    ): { value: number; dateFormatted: string } {
+        const date: Date = new Date(
+            start.getTime() + this.rng() * (end.getTime() - start.getTime())
+        );
+        return {
+            value: date.valueOf(),
+            dateFormatted: date.toLocaleDateString(),
+        };
+    }
+
+    _randomLocation(): string {
+        const locations = [
+            "Tokyo, Japan",
+            "Seattle, US",
+            "Chicago, US",
+            "Barcelona, Spain",
+            "Paris, France",
+            "Amsterdam, Netherlands",
+        ];
+        return locations[Math.floor(this.rng() * locations.length)];
+    }
+
+    _randomNumber(lower: number, upper: number): number {
+        return Math.floor(this.rng() * (upper - lower)) + lower;
+    }
 }
 
 function _copyAndSort<T>(
@@ -334,77 +416,6 @@ function _copyAndSort<T>(
         .sort((a: T, b: T) =>
             (isSortedDescending ? a[key] < b[key] : a[key] > b[key]) ? 1 : -1
         );
-}
-
-function _generateDocuments() {
-    const parts = [
-        "All-Purpose Bike Stand",
-        "AWC Logo Cap",
-        "Bike Wash - Dissolver",
-        "Cable Lock",
-        "Chain",
-        "Classic Vest, L",
-        "Classic Vest, M",
-        "Classic Vest, S",
-        "Fender Set - Mountain",
-        "Front Brakes",
-        "Front Derailleur",
-        "Full-Finger Gloves, L",
-        "Full-Finger Gloves, M",
-        "Full-Finger Gloves, S",
-        "Half-Finger Gloves, L",
-        "Half-Finger Gloves, M",
-        "Half-Finger Gloves, S",
-        "Headlights - Dual-Beam",
-        "Headlights - Weatherproof",
-        "Hitch Rack - 4-Bike",
-    ];
-    const items: IDocument[] = [];
-    for (let i = 0; i < 20; i++) {
-        const randomStock = _randomNumber(0, 100);
-        const randomPrice = _randomNumber(3, 100);
-        const randomSerialNumber = _randomNumber(100000, 999999);
-        const randomLocation = _randomLocation();
-        items.push({
-            key: i.toString(),
-            name: parts[i],
-            value: parts[i],
-            serialNumber: randomSerialNumber,
-            stock: randomStock,
-            location: randomLocation,
-            price: randomPrice,
-        });
-    }
-    return items;
-}
-
-function _randomDate(
-    start: Date,
-    end: Date
-): { value: number; dateFormatted: string } {
-    const date: Date = new Date(
-        start.getTime() + rng() * (end.getTime() - start.getTime())
-    );
-    return {
-        value: date.valueOf(),
-        dateFormatted: date.toLocaleDateString(),
-    };
-}
-
-function _randomLocation(): string {
-    const locations = [
-        "Tokyo, Japan",
-        "Seattle, US",
-        "Chicago, US",
-        "Barcelona, Spain",
-        "Paris, France",
-        "Amsterdam, Netherlands",
-    ];
-    return locations[Math.floor(rng() * locations.length)];
-}
-
-function _randomNumber(lower: number, upper: number): number {
-    return Math.floor(rng() * (upper - lower)) + lower;
 }
 
 export default Database;
