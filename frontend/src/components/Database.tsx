@@ -101,18 +101,25 @@ class Database extends React.Component<
                 minWidth: 16,
                 maxWidth: 16,
                 onColumnClick: this._onColumnClick,
-                onRender: (item: IDocument) =>
-                    item.stock < 10 ? (
-                        <Icon
-                            iconName="HourGlass"
-                            styles={{ root: { color: "#0078d4" } }}
-                        />
-                    ) : (
-                        <Icon
-                            iconName="FlameSolid"
-                            styles={{ root: { color: "#d83b01" } }}
-                        />
-                    ),
+                // < 10 items: low stock, >= 75 items: popular item
+                onRender: (item: IDocument) => {
+                    if (item.stock < 10) {
+                        return (
+                            <Icon
+                                iconName="HourGlass"
+                                styles={{ root: { color: "#0078d4" } }}
+                            />
+                        );
+                    } else if (item.stock >= 75) {
+                        return (
+                            <Icon
+                                iconName="FlameSolid"
+                                styles={{ root: { color: "#d83b01" } }}
+                            />
+                        );
+                    }
+                    return null;
+                },
             },
             {
                 key: "column2",
