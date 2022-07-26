@@ -80,7 +80,7 @@ class Database extends React.Component<
 > {
     private _selection: Selection;
     private _allItems: IDocument[];
-    rng = seedrandom("Azure");
+    rng = seedrandom("Azure"); // seeded rng, must be placed within component to ensure same results on update
 
     constructor(props: { filter }) {
         super(props);
