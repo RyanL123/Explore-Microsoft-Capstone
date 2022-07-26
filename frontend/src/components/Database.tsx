@@ -132,6 +132,22 @@ class Database extends React.Component<
             },
             {
                 key: "column3",
+                name: "Type",
+                fieldName: "type",
+                minWidth: 160,
+                maxWidth: 200,
+                isRowHeader: true,
+                isResizable: true,
+                isSorted: true,
+                isSortedDescending: false,
+                sortAscendingAriaLabel: "Sorted A to Z",
+                sortDescendingAriaLabel: "Sorted Z to A",
+                onColumnClick: this._onColumnClick,
+                data: "string",
+                isPadded: true,
+            },
+            {
+                key: "column4",
                 name: "Name",
                 fieldName: "name",
                 minWidth: 210,
@@ -147,7 +163,7 @@ class Database extends React.Component<
                 isPadded: true,
             },
             {
-                key: "column4",
+                key: "column5",
                 name: "Location",
                 fieldName: "location",
                 minWidth: 160,
@@ -160,7 +176,7 @@ class Database extends React.Component<
                 isPadded: true,
             },
             {
-                key: "column5",
+                key: "column6",
                 name: "Stock",
                 fieldName: "stock",
                 minWidth: 70,
@@ -175,7 +191,7 @@ class Database extends React.Component<
                 isPadded: true,
             },
             {
-                key: "column6",
+                key: "column7",
                 name: "Price",
                 fieldName: "price",
                 minWidth: 70,
@@ -354,7 +370,7 @@ class Database extends React.Component<
             "Hitch Rack - 4-Bike",
         ];
         // seat, frame, handlebar, pedal, wheel
-        const type = [""];
+        const type = ["Seat", "Handlebar", "Frame", "Wheel", "Pedal"];
         const items: IDocument[] = [];
         for (let i = 0; i < 20; i++) {
             const randomStock = this._randomNumber(0, 100);
@@ -365,7 +381,7 @@ class Database extends React.Component<
                 key: i.toString(),
                 name: parts[i],
                 value: parts[i],
-                type: type[i],
+                type: type[i % 5],
                 serialNumber: randomSerialNumber,
                 stock: randomStock,
                 location: randomLocation,
