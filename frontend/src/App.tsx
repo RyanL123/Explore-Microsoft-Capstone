@@ -21,7 +21,7 @@ function App() {
     const [url, setUrl] = useState("");
     const [base64url, setBase64url] = useState("");
     const [text, setText] = useState("");
-    const [parts, setParts] = useState("");
+    const [parts, setParts] = useState([]);
     const [fileName, setFileName] = useState("");
     const [loading, setLoading] = useState(false);
     const fileRef = useRef(null);
@@ -78,8 +78,9 @@ function App() {
         setLoading(true);
         getPartType(url).then((data) => {
             let concatenatedParts = "";
-            data.forEach((part) => (concatenatedParts += `${part.tagName} `));
-            setParts(concatenatedParts);
+            let allParts = [];
+            data.forEach((part) => allParts.push(part.tagName));
+            setParts(allParts);
             setLoading(false);
         });
     }
@@ -153,10 +154,13 @@ function App() {
                         Your serial number: {text}
                     </p>
                     <p style={{ fontSize: FontSizes.size24 }}>
-                        Predicted parts: {parts}
+                        Predicted parts:{" "}
+                        {parts.map((part) => (
+                            <span key={part}>{part} </span>
+                        ))}
                     </p>
                 </Stack>
-                <Database serialFilter={text} partFilter={parts} key={text} />
+                <Database serialFilter={text} partsFilter={parts} />
             </Stack>
         </Stack>
     );

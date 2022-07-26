@@ -57,7 +57,7 @@ export interface IDetailsListDocumentsExampleState {
     columns: IColumn[];
     items: IDocument[];
     serialFilter: string;
-    partsFilter: [];
+    partsFilter: string[];
     selectionDetails: string;
     isModalSelection: boolean;
     isCompactMode: boolean;
@@ -76,14 +76,14 @@ export interface IDocument {
 }
 
 class Database extends React.Component<
-    { serialFilter; partFilter },
+    { serialFilter; partsFilter },
     IDetailsListDocumentsExampleState
 > {
     private _selection: Selection;
     private _allItems: IDocument[];
     rng = seedrandom("Azure"); // seeded rng, must be placed within component to ensure same results on update
 
-    constructor(props: { serialFilter; partFilter }) {
+    constructor(props: { serialFilter; partsFilter }) {
         super(props);
 
         this._allItems = this._generateDocuments();
@@ -225,7 +225,7 @@ class Database extends React.Component<
         this.state = {
             items: this._allItems,
             serialFilter: props.serialFilter,
-            partsFilter: props.partFilter,
+            partsFilter: props.partsFilter,
             columns: columns,
             selectionDetails: this._getSelectionDetails(),
             isModalSelection: false,
@@ -235,12 +235,15 @@ class Database extends React.Component<
     }
 
     public render() {
-        const { columns, isCompactMode, items, serialFilter } = this.state;
+        const { columns, isCompactMode, items, serialFilter, partsFilter } =
+            this.state;
         // filter items before displaying
+        // ignore filter if both filters are empty
         const filtered_items = items.filter((item) => {
             return (
-                serialFilter === "" ||
-                item.serialNumber.toString() === serialFilter
+                (serialFilter === "" && partsFilter.length === 0) ||
+                item.serialNumber.toString() === serialFilter ||
+                partsFilter.includes(item.type)
             );
         });
         return (
@@ -264,11 +267,15 @@ class Database extends React.Component<
         previousProps: any,
         previousState: IDetailsListDocumentsExampleState
     ) {
+        // update on filter change
         if (
-            previousState.isModalSelection !== this.state.isModalSelection &&
-            !this.state.isModalSelection
+            previousProps.serialFilter !== this.props.serialFilter ||
+            previousProps.partsFilter !== this.props.partsFilter
         ) {
-            this._selection.setAllSelected(false);
+            this.setState({
+                serialFilter: this.props.serialFilter,
+                partsFilter: this.props.partsFilter,
+            });
         }
     }
 
@@ -382,7 +389,7 @@ class Database extends React.Component<
             "Hitch Rack - 4-Bike",
         ];
         // seat, frame, handlebar, pedal, wheel
-        const type = ["Seat", "Handlebar", "Frame", "Wheel", "Pedal"];
+        const type = ["seat", "handlebar", "frame", "wheel", "pedal"];
         const items: IDocument[] = [];
         for (let i = 0; i < 20; i++) {
             const randomStock = this._randomNumber(0, 100);
