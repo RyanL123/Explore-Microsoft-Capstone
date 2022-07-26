@@ -19,6 +19,7 @@ const linkIcon: IIconProps = { iconName: "Link" };
 
 function App() {
     const [url, setUrl] = useState("");
+    const [base64url, setBase64url] = useState("");
     const [text, setText] = useState("");
     const [parts, setParts] = useState("");
     const [fileName, setFileName] = useState("");
@@ -57,7 +58,8 @@ function App() {
         setFileName(file.name);
         reader.onloadend = function () {
             const result: string = reader.result as string;
-            setUrl(result);
+            setBase64url(result);
+            setUrl(""); // cleanse search by link field
         };
         reader.readAsDataURL(file);
     }
@@ -65,7 +67,8 @@ function App() {
     // call Azure OCR API
     function handleSerialSubmit() {
         setLoading(true);
-        getTextFromImage(url).then((extractedText) => {
+        // use url if present, otherwise attempt to use binary image file
+        getTextFromImage(url === "" ? base64url : url).then((extractedText) => {
             setText(extractedText);
             setLoading(false);
         });
@@ -100,9 +103,13 @@ function App() {
                     description="Enter a link to the image or upload one"
                     value={url}
                     styles={{ root: { width: "100%" } }}
-                    onChange={(e) =>
-                        setUrl((e.target as HTMLTextAreaElement).value)
-                    }
+                    onChange={(e) => {
+                        // erase the uploaded image
+                        setBase64url("");
+                        setFileName("");
+                        // set the link
+                        setUrl((e.target as HTMLTextAreaElement).value);
+                    }}
                     iconProps={linkIcon}
                     placeholder="https://example.com"
                 />
@@ -137,6 +144,10 @@ function App() {
                 </Stack>
             </Stack>
             <Stack tokens={{ padding: "m" }} style={{ width: "100%" }}>
+                <img
+                    src={base64url}
+                    style={{ maxWidth: "200px", height: "auto" }}
+                ></img>
                 <Stack verticalAlign="start">
                     <p style={{ fontSize: FontSizes.size24 }}>
                         Your serial number: {text}
