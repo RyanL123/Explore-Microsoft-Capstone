@@ -56,7 +56,8 @@ const controlStyles = {
 export interface IDetailsListDocumentsExampleState {
     columns: IColumn[];
     items: IDocument[];
-    filter: string;
+    serialFilter: string;
+    partsFilter: string[];
     selectionDetails: string;
     isModalSelection: boolean;
     isCompactMode: boolean;
@@ -75,14 +76,14 @@ export interface IDocument {
 }
 
 class Database extends React.Component<
-    { filter },
+    { serialFilter; partsFilter },
     IDetailsListDocumentsExampleState
 > {
     private _selection: Selection;
     private _allItems: IDocument[];
-    rng = seedrandom("Azure");
+    rng = seedrandom("Azure"); // seeded rng, must be placed within component to ensure same results on update
 
-    constructor(props: { filter }) {
+    constructor(props: { serialFilter; partsFilter }) {
         super(props);
 
         this._allItems = this._generateDocuments();
@@ -101,18 +102,25 @@ class Database extends React.Component<
                 minWidth: 16,
                 maxWidth: 16,
                 onColumnClick: this._onColumnClick,
-                onRender: (item: IDocument) =>
-                    item.stock < 10 ? (
-                        <Icon
-                            iconName="HourGlass"
-                            styles={{ root: { color: "#0078d4" } }}
-                        />
-                    ) : (
-                        <Icon
-                            iconName="FlameSolid"
-                            styles={{ root: { color: "#d83b01" } }}
-                        />
-                    ),
+                // < 10 items: low stock, >= 75 items: popular item
+                onRender: (item: IDocument) => {
+                    if (item.stock < 10) {
+                        return (
+                            <Icon
+                                iconName="HourGlass"
+                                styles={{ root: { color: "#0078d4" } }}
+                            />
+                        );
+                    } else if (item.stock >= 75) {
+                        return (
+                            <Icon
+                                iconName="FlameSolid"
+                                styles={{ root: { color: "#d83b01" } }}
+                            />
+                        );
+                    }
+                    return null;
+                },
             },
             {
                 key: "column2",
@@ -132,6 +140,22 @@ class Database extends React.Component<
             },
             {
                 key: "column3",
+                name: "Type",
+                fieldName: "type",
+                minWidth: 160,
+                maxWidth: 200,
+                isRowHeader: true,
+                isResizable: true,
+                isSorted: true,
+                isSortedDescending: false,
+                sortAscendingAriaLabel: "Sorted A to Z",
+                sortDescendingAriaLabel: "Sorted Z to A",
+                onColumnClick: this._onColumnClick,
+                data: "string",
+                isPadded: true,
+            },
+            {
+                key: "column4",
                 name: "Name",
                 fieldName: "name",
                 minWidth: 210,
@@ -147,7 +171,7 @@ class Database extends React.Component<
                 isPadded: true,
             },
             {
-                key: "column4",
+                key: "column5",
                 name: "Location",
                 fieldName: "location",
                 minWidth: 160,
@@ -160,7 +184,7 @@ class Database extends React.Component<
                 isPadded: true,
             },
             {
-                key: "column5",
+                key: "column6",
                 name: "Stock",
                 fieldName: "stock",
                 minWidth: 70,
@@ -175,7 +199,7 @@ class Database extends React.Component<
                 isPadded: true,
             },
             {
-                key: "column6",
+                key: "column7",
                 name: "Price",
                 fieldName: "price",
                 minWidth: 70,
@@ -200,7 +224,8 @@ class Database extends React.Component<
         console.log(props);
         this.state = {
             items: this._allItems,
-            filter: props.filter,
+            serialFilter: props.serialFilter,
+            partsFilter: props.partsFilter,
             columns: columns,
             selectionDetails: this._getSelectionDetails(),
             isModalSelection: false,
@@ -210,10 +235,16 @@ class Database extends React.Component<
     }
 
     public render() {
-        const { columns, isCompactMode, items, filter } = this.state;
+        const { columns, isCompactMode, items, serialFilter, partsFilter } =
+            this.state;
         // filter items before displaying
+        // ignore filter if both filters are empty
         const filtered_items = items.filter((item) => {
-            return filter === "" || item.serialNumber.toString() === filter;
+            return (
+                (serialFilter === "" && partsFilter.length === 0) ||
+                item.serialNumber.toString() === serialFilter ||
+                partsFilter.includes(item.type)
+            );
         });
         return (
             <div>
@@ -236,11 +267,15 @@ class Database extends React.Component<
         previousProps: any,
         previousState: IDetailsListDocumentsExampleState
     ) {
+        // update on filter change
         if (
-            previousState.isModalSelection !== this.state.isModalSelection &&
-            !this.state.isModalSelection
+            previousProps.serialFilter !== this.props.serialFilter ||
+            previousProps.partsFilter !== this.props.partsFilter
         ) {
-            this._selection.setAllSelected(false);
+            this.setState({
+                serialFilter: this.props.serialFilter,
+                partsFilter: this.props.partsFilter,
+            });
         }
     }
 
@@ -354,7 +389,7 @@ class Database extends React.Component<
             "Hitch Rack - 4-Bike",
         ];
         // seat, frame, handlebar, pedal, wheel
-        const type = [""];
+        const type = ["seat", "handlebar", "frame", "wheel", "pedal"];
         const items: IDocument[] = [];
         for (let i = 0; i < 20; i++) {
             const randomStock = this._randomNumber(0, 100);
@@ -365,7 +400,7 @@ class Database extends React.Component<
                 key: i.toString(),
                 name: parts[i],
                 value: parts[i],
-                type: type[i],
+                type: type[i % 5],
                 serialNumber: randomSerialNumber,
                 stock: randomStock,
                 location: randomLocation,

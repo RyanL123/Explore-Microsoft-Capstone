@@ -16,12 +16,13 @@ import Database from "./components/Database";
 const uploadIcon: IIconProps = { iconName: "Upload" };
 const searchIcon: IIconProps = { iconName: "Search" };
 const linkIcon: IIconProps = { iconName: "Link" };
+const clearIcon: IIconProps = { iconName: "Clear" };
 
 function App() {
     const [url, setUrl] = useState("");
     const [base64url, setBase64url] = useState("");
-    const [text, setText] = useState("");
-    const [parts, setParts] = useState("");
+    const [serialNumber, setSerialNumber] = useState("");
+    const [parts, setParts] = useState([]);
     const [fileName, setFileName] = useState("");
     const [loading, setLoading] = useState(false);
     const fileRef = useRef(null);
@@ -69,7 +70,7 @@ function App() {
         setLoading(true);
         // use url if present, otherwise attempt to use binary image file
         getTextFromImage(url === "" ? base64url : url).then((extractedText) => {
-            setText(extractedText);
+            setSerialNumber(extractedText);
             setLoading(false);
         });
     }
@@ -78,8 +79,9 @@ function App() {
         setLoading(true);
         getPartType(url).then((data) => {
             let concatenatedParts = "";
-            data.forEach((part) => (concatenatedParts += `${part.tagName} `));
-            setParts(concatenatedParts);
+            let allParts = [];
+            data.forEach((part) => allParts.push(part.tagName));
+            setParts(allParts);
             setLoading(false);
         });
     }
@@ -140,6 +142,19 @@ function App() {
                     >
                         Upload Image
                     </DefaultButton>
+                    <DefaultButton
+                        iconProps={clearIcon}
+                        onClick={() => {
+                            // cleanse all fields
+                            setBase64url("");
+                            setUrl("");
+                            setParts([]);
+                            setSerialNumber("");
+                            setFileName("");
+                        }}
+                    >
+                        Clear
+                    </DefaultButton>
                     <p>{fileName}</p>
                 </Stack>
             </Stack>
@@ -150,13 +165,16 @@ function App() {
                 ></img>
                 <Stack verticalAlign="start">
                     <p style={{ fontSize: FontSizes.size24 }}>
-                        Your serial number: {text}
+                        Your serial number: {serialNumber}
                     </p>
                     <p style={{ fontSize: FontSizes.size24 }}>
-                        Predicted parts: {parts}
+                        Predicted parts:{" "}
+                        {parts.map((part) => (
+                            <span key={part}>{part} </span>
+                        ))}
                     </p>
                 </Stack>
-                <Database filter={text} key={text} />
+                <Database serialFilter={serialNumber} partsFilter={parts} />
             </Stack>
         </Stack>
     );
