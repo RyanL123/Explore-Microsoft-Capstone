@@ -56,7 +56,8 @@ const controlStyles = {
 export interface IDetailsListDocumentsExampleState {
     columns: IColumn[];
     items: IDocument[];
-    filter: string;
+    serialFilter: string;
+    partsFilter: [];
     selectionDetails: string;
     isModalSelection: boolean;
     isCompactMode: boolean;
@@ -75,14 +76,14 @@ export interface IDocument {
 }
 
 class Database extends React.Component<
-    { filter },
+    { serialFilter; partFilter },
     IDetailsListDocumentsExampleState
 > {
     private _selection: Selection;
     private _allItems: IDocument[];
     rng = seedrandom("Azure"); // seeded rng, must be placed within component to ensure same results on update
 
-    constructor(props: { filter }) {
+    constructor(props: { serialFilter; partFilter }) {
         super(props);
 
         this._allItems = this._generateDocuments();
@@ -223,7 +224,8 @@ class Database extends React.Component<
         console.log(props);
         this.state = {
             items: this._allItems,
-            filter: props.filter,
+            serialFilter: props.serialFilter,
+            partsFilter: props.partFilter,
             columns: columns,
             selectionDetails: this._getSelectionDetails(),
             isModalSelection: false,
@@ -233,10 +235,13 @@ class Database extends React.Component<
     }
 
     public render() {
-        const { columns, isCompactMode, items, filter } = this.state;
+        const { columns, isCompactMode, items, serialFilter } = this.state;
         // filter items before displaying
         const filtered_items = items.filter((item) => {
-            return filter === "" || item.serialNumber.toString() === filter;
+            return (
+                serialFilter === "" ||
+                item.serialNumber.toString() === serialFilter
+            );
         });
         return (
             <div>

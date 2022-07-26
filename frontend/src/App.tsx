@@ -156,7 +156,7 @@ function App() {
                         Predicted parts: {parts}
                     </p>
                 </Stack>
-                <Database filter={text} key={text} />
+                <Database serialFilter={text} partFilter={parts} key={text} />
             </Stack>
         </Stack>
     );
