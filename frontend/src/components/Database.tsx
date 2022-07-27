@@ -8,6 +8,7 @@ import {
 } from "@fluentui/react/lib/DetailsList";
 import { Icon } from "@fluentui/react";
 import { mergeStyleSets } from "@fluentui/react/lib/Styling";
+import sampleData from "../util/data.json";
 const seedrandom = require("seedrandom");
 
 const classNames = mergeStyleSets({
@@ -69,7 +70,8 @@ export interface IDocument {
     name: string;
     value: string;
     serialNumber: number;
-    type: string;
+    category: string;
+    categoryValue: string;
     stock: number;
     location: string;
     price: number;
@@ -140,8 +142,8 @@ class Database extends React.Component<
             },
             {
                 key: "column3",
-                name: "Type",
-                fieldName: "type",
+                name: "Category",
+                fieldName: "category",
                 minWidth: 160,
                 maxWidth: 200,
                 isRowHeader: true,
@@ -209,7 +211,7 @@ class Database extends React.Component<
                 data: "number",
                 onColumnClick: this._onColumnClick,
                 onRender: (item: IDocument) => {
-                    return <span>${item.price}.99</span>;
+                    return <span>${item.price}</span>;
                 },
             },
         ];
@@ -221,7 +223,6 @@ class Database extends React.Component<
                 });
             },
         });
-        console.log(props);
         this.state = {
             items: this._allItems,
             serialFilter: props.serialFilter,
@@ -243,7 +244,7 @@ class Database extends React.Component<
             return (
                 (serialFilter === "" && partsFilter.length === 0) ||
                 item.serialNumber.toString() === serialFilter ||
-                partsFilter.includes(item.type)
+                partsFilter.includes(item.categoryValue)
             );
         });
         return (
@@ -366,45 +367,29 @@ class Database extends React.Component<
         });
     };
     _generateDocuments() {
-        const parts = [
-            "All-Purpose Bike Stand",
-            "AWC Logo Cap",
-            "Bike Wash - Dissolver",
-            "Cable Lock",
-            "Chain",
-            "Classic Vest, L",
-            "Classic Vest, M",
-            "Classic Vest, S",
-            "Fender Set - Mountain",
-            "Front Brakes",
-            "Front Derailleur",
-            "Full-Finger Gloves, L",
-            "Full-Finger Gloves, M",
-            "Full-Finger Gloves, S",
-            "Half-Finger Gloves, L",
-            "Half-Finger Gloves, M",
-            "Half-Finger Gloves, S",
-            "Headlights - Dual-Beam",
-            "Headlights - Weatherproof",
-            "Hitch Rack - 4-Bike",
-        ];
         // seat, frame, handlebar, pedal, wheel
-        const type = ["seat", "handlebar", "frame", "wheel", "pedal"];
+        const categoryMap = {
+            Saddles: "seat",
+            Handlebars: "handlebar",
+            "Road Frames": "frame",
+            Wheels: "wheel",
+            Pedals: "pedal",
+        };
         const items: IDocument[] = [];
-        for (let i = 0; i < 20; i++) {
+        for (let i = 0; i < sampleData.length; i++) {
             const randomStock = this._randomNumber(0, 100);
-            const randomPrice = this._randomNumber(3, 100);
             const randomSerialNumber = this._randomNumber(100000, 999999);
             const randomLocation = this._randomLocation();
             items.push({
                 key: i.toString(),
-                name: parts[i],
-                value: parts[i],
-                type: type[i % 5],
+                name: sampleData[i].ProductName,
+                value: sampleData[i].ProductName,
+                category: sampleData[i].CategoryName,
+                categoryValue: categoryMap[sampleData[i].CategoryName],
                 serialNumber: randomSerialNumber,
                 stock: randomStock,
                 location: randomLocation,
-                price: randomPrice,
+                price: parseInt(sampleData[i].Price),
             });
         }
         return items;

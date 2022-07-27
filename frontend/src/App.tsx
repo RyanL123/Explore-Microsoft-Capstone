@@ -9,7 +9,7 @@ import {
     IContextualMenuProps,
 } from "@fluentui/react";
 import { FontSizes } from "@fluentui/theme";
-import { getTextFromImage, getPartType } from "./components/OCR";
+import { getTextFromImage, getPartType } from "./util/OCR";
 import Database from "./components/Database";
 
 // icons
