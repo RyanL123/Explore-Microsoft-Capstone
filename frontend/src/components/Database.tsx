@@ -389,7 +389,7 @@ class Database extends React.Component<
                 serialNumber: randomSerialNumber,
                 stock: randomStock,
                 location: randomLocation,
-                price: parseInt(sampleData[i].Price),
+                price: parseFloat(sampleData[i].Price),
             });
         }
         return items;
