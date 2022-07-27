@@ -77,7 +77,7 @@ export async function getPartType(url: string) {
     }).then((data) => {
         return data.json().then((data) => {
             let finalPredictions = data.predictions.filter((prediction) => {
-                return prediction.probability >= 0.85;
+                return prediction.probability >= 0.8; // 80% confidence or more
             });
             return finalPredictions;
         });
