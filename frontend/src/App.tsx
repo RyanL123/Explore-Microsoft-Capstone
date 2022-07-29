@@ -160,7 +160,7 @@ function App() {
             </Stack>
             <Stack tokens={{ padding: "m" }} style={{ width: "100%" }}>
                 <img
-                    src={base64url}
+                    src={base64url === "" ? url : base64url}
                     style={{ maxWidth: "200px", height: "auto" }}
                 ></img>
                 <Stack verticalAlign="start">
