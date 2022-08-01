@@ -88,9 +88,10 @@ function Chat({ setChatIsOpen, chatIsOpen }) {
                 <Stack
                     style={{
                         height: "80%",
-                        overflow: "scroll",
+                        overflowY: "scroll",
                         display: "flex",
                         flexDirection: "column-reverse",
+                        scrollbarWidth: "none",
                     }}
                 >
                     {messages.map((message) => (
