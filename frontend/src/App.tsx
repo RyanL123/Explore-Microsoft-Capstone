@@ -7,16 +7,19 @@ import {
     IIconProps,
     ProgressIndicator,
     IContextualMenuProps,
+    Panel,
 } from "@fluentui/react";
 import { FontSizes } from "@fluentui/theme";
 import { getTextFromImage, getPartType } from "./util/OCR";
 import Database from "./components/Database";
+import Chat from "./components/Chat";
 
 // icons
 const uploadIcon: IIconProps = { iconName: "Upload" };
 const searchIcon: IIconProps = { iconName: "Search" };
 const linkIcon: IIconProps = { iconName: "Link" };
 const clearIcon: IIconProps = { iconName: "Clear" };
+const chatIcon: IIconProps = { iconName: "Chat" };
 
 function App() {
     const [url, setUrl] = useState("");
@@ -25,6 +28,7 @@ function App() {
     const [parts, setParts] = useState([]);
     const [fileName, setFileName] = useState("");
     const [loading, setLoading] = useState(false);
+    const [chatIsOpen, setChatIsOpen] = useState(false);
     const fileRef = useRef(null);
 
     // dropdown
@@ -155,6 +159,14 @@ function App() {
                     >
                         Clear
                     </DefaultButton>
+                    <DefaultButton
+                        iconProps={chatIcon}
+                        onClick={() => {
+                            setChatIsOpen(true);
+                        }}
+                    >
+                        Chat
+                    </DefaultButton>
                     <p>{fileName}</p>
                 </Stack>
             </Stack>
@@ -176,6 +188,16 @@ function App() {
                 </Stack>
                 <Database serialFilter={serialNumber} partsFilter={parts} />
             </Stack>
+            <Panel
+                isLightDismiss
+                isOpen={chatIsOpen}
+                isHiddenOnDismiss={true}
+                onDismiss={() => {
+                    setChatIsOpen(false);
+                }}
+            >
+                <Chat />
+            </Panel>
         </Stack>
     );
 }
