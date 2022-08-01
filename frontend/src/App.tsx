@@ -11,6 +11,7 @@ import {
 import { FontSizes } from "@fluentui/theme";
 import { getTextFromImage, getPartType } from "./util/OCR";
 import Database from "./components/Database";
+import Chat from "./components/Chat";
 
 // icons
 const uploadIcon: IIconProps = { iconName: "Upload" };
@@ -157,6 +158,7 @@ function App() {
                     </DefaultButton>
                     <p>{fileName}</p>
                 </Stack>
+                <Chat />
             </Stack>
             <Stack tokens={{ padding: "m" }} style={{ width: "100%" }}>
                 <img
