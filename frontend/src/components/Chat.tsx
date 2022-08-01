@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Stack, TextField, PrimaryButton } from "@fluentui/react";
+import { useState, useRef, useEffect } from "react";
+import { Stack, TextField, PrimaryButton, Panel } from "@fluentui/react";
 
 const HOST = "https://qnamakeradventure.azurewebsites.net/qnamaker";
 const KB_ID =
@@ -11,13 +11,26 @@ interface Message {
     content: string;
 }
 
-function Chat() {
+function Chat({ setChatIsOpen, chatIsOpen }) {
     const [messages, setMessages] = useState([]);
     const [userMessage, setUserMessage] = useState("");
+    const messagesEndRef = useRef(null); // dummy div
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages]);
+
+    function scrollToBottom() {
+        // scroll chat to dummy div at the bottom when messages are updated
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+
     function handleSubmit() {
+        const tempUserMessage = userMessage; // record state to cleanse text field
+        setUserMessage("");
         setMessages((previousMessages) => [
+            { fromUser: true, content: tempUserMessage },
             ...previousMessages,
-            { fromUser: true, content: userMessage },
         ]);
         fetch(HOST + KB_ID, {
             method: "POST",
@@ -25,46 +38,83 @@ function Chat() {
                 "Content-Type": "application/json",
                 Authorization: ENDPOINT_KEY,
             },
-            body: `{"question":"${userMessage}"}`,
+            body: `{"question":"${tempUserMessage}"}`,
         }).then((data) => {
-            setUserMessage("");
             data.json().then((data) => {
                 setMessages((previousMessages) => [
-                    ...previousMessages,
                     { fromUser: false, content: data.answers[0].answer },
+                    ...previousMessages,
                 ]);
             });
         });
     }
     return (
-        <Stack tokens={{ childrenGap: "s1" }}>
-            <TextField
-                placeholder="e.g. 'I need a bike'"
-                value={userMessage}
-                onChange={(e) => {
-                    setUserMessage((e.target as HTMLTextAreaElement).value);
-                }}
-            />
-            <PrimaryButton onClick={() => handleSubmit()}>Send</PrimaryButton>
-            <Stack>
-                {messages.map((message) => (
-                    <Stack horizontalAlign={message.fromUser ? "end" : "start"}>
-                        <p
-                            style={{
-                                backgroundColor: message.fromUser
-                                    ? "#e8ebfa"
-                                    : "#f5f5f5",
-                                color: "black",
-                                padding: "10px",
-                                borderRadius: "6px",
+        <Panel
+            isLightDismiss
+            isOpen={chatIsOpen}
+            headerText="Talk to our AI assistant!"
+            isHiddenOnDismiss={true}
+            onRenderFooterContent={() => (
+                <form>
+                    <Stack horizontal tokens={{ childrenGap: "s1" }}>
+                        <TextField
+                            placeholder="e.g. 'I need a bike'"
+                            value={userMessage}
+                            onChange={(e) => {
+                                setUserMessage(
+                                    (e.target as HTMLTextAreaElement).value
+                                );
                             }}
+                        />
+                        <PrimaryButton
+                            onClick={(e) => {
+                                e.preventDefault();
+                                handleSubmit();
+                            }}
+                            type="submit"
+                            iconProps={{ iconName: "Send" }}
                         >
-                            {message.content}
-                        </p>
+                            Send
+                        </PrimaryButton>
                     </Stack>
-                ))}
+                </form>
+            )}
+            isFooterAtBottom={true}
+            onDismiss={() => {
+                setChatIsOpen(false);
+            }}
+        >
+            <Stack tokens={{ childrenGap: "s1" }}>
+                <Stack
+                    style={{
+                        height: "80%",
+                        overflow: "scroll",
+                        display: "flex",
+                        flexDirection: "column-reverse",
+                    }}
+                >
+                    {messages.map((message) => (
+                        <Stack
+                            horizontalAlign={message.fromUser ? "end" : "start"}
+                        >
+                            <p
+                                style={{
+                                    backgroundColor: message.fromUser
+                                        ? "#e8ebfa"
+                                        : "#f5f5f5",
+                                    color: "black",
+                                    padding: "10px",
+                                    borderRadius: "6px",
+                                }}
+                            >
+                                {message.content}
+                            </p>
+                        </Stack>
+                    ))}
+                </Stack>
+                <div ref={messagesEndRef}></div>
             </Stack>
-        </Stack>
+        </Panel>
     );
 }
 

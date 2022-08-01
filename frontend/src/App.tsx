@@ -7,7 +7,6 @@ import {
     IIconProps,
     ProgressIndicator,
     IContextualMenuProps,
-    Panel,
 } from "@fluentui/react";
 import { FontSizes } from "@fluentui/theme";
 import { getTextFromImage, getPartType } from "./util/OCR";
@@ -188,16 +187,8 @@ function App() {
                 </Stack>
                 <Database serialFilter={serialNumber} partsFilter={parts} />
             </Stack>
-            <Panel
-                isLightDismiss
-                isOpen={chatIsOpen}
-                isHiddenOnDismiss={true}
-                onDismiss={() => {
-                    setChatIsOpen(false);
-                }}
-            >
-                <Chat />
-            </Panel>
+
+            <Chat setChatIsOpen={setChatIsOpen} chatIsOpen={chatIsOpen} />
         </Stack>
     );
 }
