@@ -37,8 +37,9 @@ function Chat() {
         });
     }
     return (
-        <Stack>
+        <Stack tokens={{ childrenGap: "s1" }}>
             <TextField
+                placeholder="e.g. 'I need a bike'"
                 value={userMessage}
                 onChange={(e) => {
                     setUserMessage((e.target as HTMLTextAreaElement).value);
@@ -51,9 +52,9 @@ function Chat() {
                         <p
                             style={{
                                 backgroundColor: message.fromUser
-                                    ? "#0078d4"
-                                    : "#498205",
-                                color: "white",
+                                    ? "#e8ebfa"
+                                    : "#f5f5f5",
+                                color: "black",
                                 padding: "10px",
                                 borderRadius: "6px",
                             }}
