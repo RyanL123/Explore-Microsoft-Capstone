@@ -6,12 +6,19 @@ const KB_ID =
     "/knowledgebases/d51361f2-704e-47d8-bae4-3008826b7385/generateAnswer";
 const ENDPOINT_KEY = "EndpointKey c57494ec-a783-41de-b62f-b787ba282fa9";
 
+interface Message {
+    fromUser: boolean;
+    content: string;
+}
+
 function Chat() {
-    const [messages, setMessages] = useState([{}]);
+    const [messages, setMessages] = useState([]);
     const [userMessage, setUserMessage] = useState("");
     function handleSubmit() {
-        console.log("test");
-        setMessages([...messages, { fromUser: true, content: userMessage }]);
+        setMessages((previousMessages) => [
+            ...previousMessages,
+            { fromUser: true, content: userMessage },
+        ]);
         fetch(HOST + KB_ID, {
             method: "POST",
             headers: {
@@ -20,12 +27,12 @@ function Chat() {
             },
             body: `{"question":"${userMessage}"}`,
         }).then((data) => {
+            setUserMessage("");
             data.json().then((data) => {
-                setMessages([
-                    ...messages,
+                setMessages((previousMessages) => [
+                    ...previousMessages,
                     { fromUser: false, content: data.answers[0].answer },
                 ]);
-                console.log(data.answers[0].answer);
             });
         });
     }
@@ -38,7 +45,24 @@ function Chat() {
                 }}
             />
             <PrimaryButton onClick={() => handleSubmit()}>Send</PrimaryButton>
-            {/* {messages.map((message) => message.content)} */}
+            <Stack>
+                {messages.map((message) => (
+                    <Stack horizontalAlign={message.fromUser ? "end" : "start"}>
+                        <p
+                            style={{
+                                backgroundColor: message.fromUser
+                                    ? "#0078d4"
+                                    : "#498205",
+                                color: "white",
+                                padding: "10px",
+                                borderRadius: "6px",
+                            }}
+                        >
+                            {message.content}
+                        </p>
+                    </Stack>
+                ))}
+            </Stack>
         </Stack>
     );
 }
