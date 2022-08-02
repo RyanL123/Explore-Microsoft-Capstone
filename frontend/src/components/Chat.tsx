@@ -57,25 +57,30 @@ function Chat({ setChatIsOpen, chatIsOpen }) {
             onRenderFooterContent={() => (
                 <form>
                     <Stack horizontal tokens={{ childrenGap: "s1" }}>
-                        <TextField
-                            placeholder="e.g. 'I need a bike'"
-                            value={userMessage}
-                            onChange={(e) => {
-                                setUserMessage(
-                                    (e.target as HTMLTextAreaElement).value
-                                );
-                            }}
-                        />
-                        <PrimaryButton
-                            onClick={(e) => {
-                                e.preventDefault();
-                                handleSubmit();
-                            }}
-                            type="submit"
-                            iconProps={{ iconName: "Send" }}
-                        >
-                            Send
-                        </PrimaryButton>
+                        <Stack grow>
+                            <TextField
+                                placeholder="e.g. 'I need a bike'"
+                                value={userMessage}
+                                onChange={(e) => {
+                                    setUserMessage(
+                                        (e.target as HTMLTextAreaElement).value
+                                    );
+                                }}
+                                style={{ flexGrow: "2" }}
+                            />
+                        </Stack>
+                        <Stack>
+                            <PrimaryButton
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    handleSubmit();
+                                }}
+                                type="submit"
+                                iconProps={{ iconName: "Send" }}
+                            >
+                                Send
+                            </PrimaryButton>
+                        </Stack>
                     </Stack>
                 </form>
             )}
