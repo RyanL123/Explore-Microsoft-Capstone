@@ -12,7 +12,9 @@ interface Message {
 }
 
 function Chat({ setChatIsOpen, chatIsOpen }) {
-    const [messages, setMessages] = useState([]);
+    const [messages, setMessages] = useState([
+        { fromUser: false, content: "What can I help you with today?" },
+    ]);
     const [userMessage, setUserMessage] = useState("");
     const messagesEndRef = useRef(null); // dummy div
 
@@ -41,8 +43,24 @@ function Chat({ setChatIsOpen, chatIsOpen }) {
             body: `{"question":"${tempUserMessage}"}`,
         }).then((data) => {
             data.json().then((data) => {
+                // replace markdown links with anchor tags
+                var sanitizedContent = data.answers[0].answer.replace(
+                    /\[([^\]]+)\]\(([^\)]+)\)/g,
+                    '<a href="$2">$1</a>'
+                );
+                // replace return characters with line break
+                sanitizedContent = sanitizedContent.replace(
+                    /(\r\n|\n|\r)/gm,
+                    "\n"
+                );
+                // replace asterisk with bullet points
+                sanitizedContent = sanitizedContent.replaceAll("*", "&#8226");
                 setMessages((previousMessages) => [
-                    { fromUser: false, content: data.answers[0].answer },
+                    {
+                        fromUser: false,
+                        // replace enter character with line break
+                        content: sanitizedContent,
+                    },
                     ...previousMessages,
                 ]);
             });
@@ -111,9 +129,15 @@ function Chat({ setChatIsOpen, chatIsOpen }) {
                                     color: "black",
                                     padding: "10px",
                                     borderRadius: "6px",
+                                    whiteSpace: "pre-line",
                                 }}
                             >
-                                {message.content}
+                                <div
+                                    dangerouslySetInnerHTML={{
+                                        __html: message.content,
+                                    }}
+                                />
+                                {/* {message.content} */}
                             </p>
                         </Stack>
                     ))}
