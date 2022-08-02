@@ -63,10 +63,11 @@ function queryDatabase() {
 
     // Read all rows from table
     const request = new Request(
-        `SELECT TOP 20 pc.Name as CategoryName,
+        `SELECT TOP 1000 pc.Name as CategoryName,
                    p.name as ProductName
      FROM [SalesLT].[ProductCategory] pc
-     JOIN [SalesLT].[Product] p ON pc.productcategoryid = p.productcategoryid`,
+     JOIN [SalesLT].[Product] p ON pc.productcategoryid = p.productcategoryid
+     WHERE pc.Name LIKE 'Wheels'`,
         (err, rowCount) => {
             if (err) {
                 console.error(err.message);
