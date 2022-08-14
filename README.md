@@ -1,70 +1,55 @@
-# Getting Started with Create React App
+# Explore Microsoft Capstone Project
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Final project prototype built on Azure for the Explore Microsoft internship at Microsoft Canada during 2022 summer. Key features include the ability to search through a database of bike parts by uploading pictures of serial numbers or similar bike parts, and a custom chat bot that can answer FAQ questions.
 
-## Available Scripts
+# Getting Started
 
-In the project directory, you can run:
+## 1. Creating resources on Azure
 
-### `npm start`
+You must first create the following resources on Azure in order to obtain the API keys needed:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+-   Optical Character Recognition
+-   Custom Vision
+-   QnA Maker
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+More information can be found on the Azure Portal
 
-### `npm test`
+## 2. Setup environmental variables
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Once you have created the above Azure resources, create a .env file in the root of the project and populate it with the following variables
 
-### `npm run build`
+More information on how to get the keys here:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+-   [OCR](https://westus.dev.cognitive.microsoft.com/docs/services/computer-vision-v3-2/operations/5d986960601faab4bf452005)
+-   [Custom Vision](https://docs.microsoft.com/en-us/rest/api/custom-vision/)
+-   [QnA Maker](https://westus.dev.cognitive.microsoft.com/docs/services/5a93fcf85b4ccd136866eb37/operations/5ac266295b4ccd1554da75ff)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```
+REACT_APP_OCR_ENDPOINT=
+REACT_APP_OCR_SUBSCRIPTION_KEY=
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+REACT_APP_CV_ENDPOINT=
+REACT_APP_CV_PREDICTION_KEY=
 
-### `npm run eject`
+REACT_APP_QNA_MAKER_ENDPOINT=
+REACT_APP_QNA_MAKER_KEY=
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## 3. Testing locally
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```
+docker-compose -f docker-compose-dev.yml up --build
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Then navigate to localhost:8080
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## 4. Production using Azure App Services
 
-## Learn More
+Deploy using Azure App Services with the following configuration:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+-   Publish: Docker Container
+-   Options: Docker Compose
+-   Image Source: Docker Hub
+-   Configuration File: [docker-compose.yml](/docker-compose.yml)
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Alternatively, deploy using the [Azure ARM Template](/azure_arm_template.json)
