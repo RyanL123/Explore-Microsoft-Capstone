@@ -2,13 +2,7 @@ version: "3.7"
 
 services:
     frontend:
-        container_name: frontend
-        build:
-            context: .
-            dockerfile: Dockerfile
-        volumes:
-            - ".:/app"
-            - "/app/node_modules"
+        image: "ryanl123/adventureworks"
         ports:
             - 8080:3000
         env_file: .env
