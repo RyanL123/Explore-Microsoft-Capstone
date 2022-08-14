@@ -1,11 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Stack, TextField, PrimaryButton, Panel } from "@fluentui/react";
 
-const HOST = "https://qnamakeradventure.azurewebsites.net/qnamaker";
-const KB_ID =
-    "/knowledgebases/d51361f2-704e-47d8-bae4-3008826b7385/generateAnswer";
-const ENDPOINT_KEY = "EndpointKey c57494ec-a783-41de-b62f-b787ba282fa9";
-
 interface Message {
     fromUser: boolean;
     content: string;
@@ -34,11 +29,11 @@ function Chat({ setChatIsOpen, chatIsOpen }) {
             { fromUser: true, content: tempUserMessage },
             ...previousMessages,
         ]);
-        fetch(HOST + KB_ID, {
+        fetch(process.env.REACT_APP_QNA_MAKER_ENDPOINT, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: ENDPOINT_KEY,
+                Authorization: process.env.REACT_APP_QNA_MAKER_KEY,
             },
             body: `{"question":"${tempUserMessage}"}`,
         }).then((data) => {

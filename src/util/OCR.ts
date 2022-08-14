@@ -57,9 +57,7 @@ export async function getTextFromImage(url: string) {
 export async function getPartType(url: string) {
     const isBase64 = url.substring(0, 4) === "data";
     return await fetch(
-        isBase64
-            ? process.env.REACT_APP_CV_IMAGE_ENDPOINT
-            : process.env.REACT_APP_CV_LINK_ENDPOINT,
+        process.env.REACT_APP_CV_ENDPOINT + isBase64 ? "image" : "url",
         {
             method: "POST",
             headers: {
